@@ -9,10 +9,10 @@ Created on Wed Apr 26 10:41:24 2023
 from setuptools import setup, find_packages
 
 setup(
-    name='emg_data_preprocessing',
+    name='SML_EMG',
     version='0.1.0',
     author='Ari Asarch',
-    description='A package for preprocessing EMG data',
+    description='A package for using SML on EMG data',
     packages=find_packages(),
     install_requires=[
         'pandas',
