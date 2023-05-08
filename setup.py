@@ -17,5 +17,11 @@ setup(
     install_requires=[
         'pandas',
         'matplotlib'
+        'numpy'
+        'shap'
+        'bayesian-optimization'
+        'scikit-learn'
+        'xgboost'
+        'logitboost'   
     ],
 )

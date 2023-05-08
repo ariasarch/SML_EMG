@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri May  5 13:25:32 2023
+Created on Sat May  6 18:40:40 2023
 
 @author: ariasarch
 """
@@ -9,11 +9,12 @@ Created on Fri May  5 13:25:32 2023
 # Import necessary packages 
 import numpy as np
 import matplotlib.pyplot as plt
-from logitboost import LogitBoost
+from sklearn.tree import DecisionTreeClassifier
 from bayes_opt import BayesianOptimization
 from bayes_opt.util import UtilityFunction
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import accuracy_score
+from SML_EMG.config import file_path
 
 ##############################################################################################################
 
@@ -22,17 +23,18 @@ warnings.filterwarnings('ignore')
 
 ##############################################################################################################
 
-# Run model
-def logit_boost(best_params):
-    model = LogitBoost(learning_rate = best_params['learning_rate'], n_estimators = int(best_params['n_estimators']), random_state=42)
+# Run Tree model
+def tree_model(best_params):
+    model = DecisionTreeClassifier(max_depth = int(best_params['max_depth']), min_samples_split = int(best_params['min_samples_split']), min_samples_leaf = int(best_params['min_samples_leaf']))
     
     return model
 
 # Create hyperparameter space
 def get_hyperparameter_space():
     pbounds = {
-        'learning_rate': (0.01, 1),
-        'n_estimators': (50, 500),
+        'max_depth': (3, 10),
+        'min_samples_split': (2, 10),
+        'min_samples_leaf': (1, 5)
     }
     return pbounds
 
@@ -75,7 +77,6 @@ def bayesian_optimization(evaluate_model, pbounds, n_iter):
     
     return best_params, optimizer, n_iter
 
-# Plot each iteration's average 
 def plot_avg(optimizer, n_iter, X_test, y_test, model, model_name):
     # Extract avg_score from each optimization run
     avg_scores = [run['target'] for run in optimizer.res]
@@ -100,22 +101,22 @@ def plot_avg(optimizer, n_iter, X_test, y_test, model, model_name):
 
 ##############################################################################################################
 
-# Run main function
-def exec_logitboost(X_train, X_test, y_train, y_test):
+# Run Main Function
+def exec_decision_trees(X_train, X_test, y_train, y_test):
 
     # Call bounds for optimization 
     pbounds = get_hyperparameter_space()
     
-    # Evaluate model
-    def evaluate_model(learning_rate, n_estimators):
-        
-        # Run model
-        model = LogitBoost(learning_rate = learning_rate, n_estimators = int(n_estimators))
-        
+    # Evaluate Tree model
+    def evaluate_model(max_depth, min_samples_split, min_samples_leaf):
+            
+        # Run Tree model
+        model = DecisionTreeClassifier(max_depth = int(max_depth), min_samples_split = int(min_samples_split), min_samples_leaf = int(min_samples_leaf))
+            
         # Train and evaluate the model using cross-validation
-        cv_scores = cross_val_score(model, X_train, y_train, cv=10, scoring = 'accuracy')
+        cv_scores = cross_val_score(model, X_train, y_train, cv = 10, scoring = 'accuracy')
         avg_score = cv_scores.mean()
-        
+            
         # Return the average accuracy
         return avg_score
     
@@ -123,15 +124,16 @@ def exec_logitboost(X_train, X_test, y_train, y_test):
     best_params, optimizer, n_iter = bayesian_optimization(evaluate_model, pbounds, n_iter = 10)
     
     # Store the optimized model
-    model = logit_boost(best_params)
+    model = tree_model(best_params)
     
-    # Run the model 
+    # Run the tree model 
     model.fit(X_train, y_train)
     
     # Plot accuracy 
-    model_name = "Logitboost"
+    model_name = "Decision Trees"
     accuracy = plot_avg(optimizer, n_iter, X_test, y_test, model, model_name)
     
     model_type = "tree"
     
     return model, accuracy, model_type
+

@@ -27,8 +27,7 @@ def load():
     y = df['Stimulation']
     X = df.iloc[:, :-1]
     
-    ##############################################################################################################
-    
     # Split Data
     X_train, X_test, y_train, y_test = split_data(X, y)
+    
     return X_train, X_test, y_train, y_test
