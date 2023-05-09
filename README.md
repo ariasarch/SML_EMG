@@ -8,7 +8,7 @@ Installation and Usage:
 
         1. Clone the repository
         
-            git clone git@github.com:ariasarch/SML_EMG.git
+            git clone https://github.com/ariasarch/SML_EMG.git
             cd SML_EMG
         
         2. (Optional) Create a virtual environment
