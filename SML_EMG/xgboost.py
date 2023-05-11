@@ -74,10 +74,10 @@ def bayesian_optimization(evaluate_model, pbounds, n_iter):
 # Run xgboost model
 def xgboost_model(best_params):
     model = XGBClassifier(max_depth=int(best_params['max_depth']), subsample=best_params['subsample'],
-                          n_estimators=int(best_params['n_estimators']), learning_rate=best_params['learning_rate'], 
-                          objective='binary:logistic', eval_metric = 'error'
-    )
-    
+                          n_estimators=int(best_params['n_estimators']), learning_rate=best_params['learning_rate'],
+                          objective='binary:logistic', eval_metric='error'
+                          )
+
     return model
 
 # Plot each iteration's average 

@@ -119,7 +119,7 @@ def exec_svm_linear(X_train, X_test, y_train, y_test):
 
     # Call bounds for optimization 
     pbounds = get_hyperparameter_space()
-    
+      
     # Evaluate SVM model
     def evaluate_model(C, gamma):
         

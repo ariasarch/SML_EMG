@@ -25,7 +25,7 @@ def load():
     
     # Set the first column as y and the rest as X
     y = df['Stimulation']
-    X = df.iloc[:, :-1]
+    X = df.drop(['Stimulation'], axis=1)
     
     # Split Data
     X_train, X_test, y_train, y_test = split_data(X, y)

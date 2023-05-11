@@ -8,22 +8,24 @@ Created on Fri May  5 12:07:07 2023
 
 # Import all modules
 import time
+import pandas as pd
+import pickle
 import SML_EMG as se
 
 # Split and load the data
 X_train, X_test, y_train, y_test = se.load()
 
 # Run all SML models
-# funcs = [se.exec_xgboost, se.exec_logitboost, se.exec_adaboost, 
-#           se.exec_decision_trees,
-#           se.exec_lda, se.exec_qda,
-#           se.exec_nb_gaus, se.exec_nb_bern, se.exec_nb_multi,
-#           se.exec_svm_linear, se.exec_svm_quadratic, se.exec_svm_cubic, se.exec_svm_fine, se.exec_svm_medium, se.exec_svm_coarse,
-#           se.exec_KNN_fine, se.exec_KNN_medium, se.exec_KNN_coarse, se.exec_KNN_cubic, se.exec_KNN_weighted, se.exec_KNN_cosine,
-#           se.exec_random_forest, se.exec_extra_trees]
+funcs = [se.exec_xgboost, se.exec_logitboost, se.exec_adaboost, 
+          se.exec_decision_trees,
+          se.exec_lda, se.exec_qda,
+          se.exec_nb_gaus, se.exec_nb_bern, se.exec_nb_multi,
+          se.exec_svm_linear, se.exec_svm_quadratic, se.exec_svm_cubic, se.exec_svm_fine, se.exec_svm_medium, se.exec_svm_coarse,
+          se.exec_KNN_fine, se.exec_KNN_medium, se.exec_KNN_coarse, se.exec_KNN_cubic, se.exec_KNN_weighted, se.exec_KNN_cosine,
+          se.exec_random_forest, se.exec_extra_trees]
 
 # Run a single SML model
-funcs = [se.exec_xgboost]
+# funcs = [se.exec_xgboost]
 
 # Store all models and metrics 
 dic = {}
@@ -46,8 +48,16 @@ for func in funcs:
     # Add to dictionary 
     dic[accuracy] = (model, elapsed_time, iteration, model_type)
     
+    # Save the model to disk
+    model_filename = func.__name__.replace("exec_", "") + '_model.sav'
+    pickle.dump(model, open(model_filename, 'wb'))
+    
     # Add iteration
     iteration += 1
+
+# Save the dictionary to disk
+dict_filename = 'dictionary_sml.sav'
+pickle.dump(dic, open(dict_filename, 'wb'))
 
 # Call 'best' SML 
 key = sorted(list(dic.keys()), reverse=True)[0]
@@ -67,3 +77,11 @@ else:
     # uncomment for p values
     
     # se.p_value_tree(X_train, X_test, y_train, y_test, best_model, SHAP)
+    
+# Save the SHAP values to disk
+shap_filename = 'shap_values_sml.sav'
+pickle.dump(SHAP, open(shap_filename, 'wb'))  
+    
+# Load models if need be
+#loaded_models, loaded_dic, loaded_SHAP = load_models_and_data(funcs)
+    

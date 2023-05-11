@@ -32,5 +32,6 @@ from SML_EMG.Random_Forest import *
 from SML_EMG.Extra_Trees import *
 from SML_EMG.SHAP import *
 from SML_EMG.p_value import *
+from SML_EMG.load_models import *
 
 __version__ = '0.1.0'
