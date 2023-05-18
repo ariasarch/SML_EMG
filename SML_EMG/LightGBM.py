@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat May  6 21:45:18 2023
+Created on Sat May 13 09:03:26 2023
 
 @author: ariasarch
 """
@@ -10,12 +10,11 @@ Created on Sat May  6 21:45:18 2023
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.naive_bayes import MultinomialNB
+import lightgbm as lgb
 from bayes_opt import BayesianOptimization
 from bayes_opt.util import UtilityFunction
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import accuracy_score
-from sklearn.preprocessing import MinMaxScaler
 
 ##############################################################################################################
 
@@ -24,16 +23,13 @@ warnings.filterwarnings('ignore')
 
 ##############################################################################################################
 
-# Run NB model
-def nb_model(best_params):
-    model = MultinomialNB(alpha = best_params['alpha'])
-    
-    return model
-
 # Create hyperparameter space
 def get_hyperparameter_space():
     pbounds = {
-        'alpha': (0.01, 1)
+        'num_leaves': (1,50),
+        'max_depth': (-1,100),
+        'learning_rate': (0.05,1),
+        'n_estimators': (50,200)
     }
     return pbounds
 
@@ -76,6 +72,14 @@ def bayesian_optimization(evaluate_model, pbounds, n_iter):
     
     return best_params, optimizer, n_iter
 
+# Run xgboost model
+def lightgbm_model(best_params):
+    model = lgb.LGBMClassifier(boosting_type='gbdt', num_leaves=int(best_params['num_leaves']), max_depth=best_params['max_depth'],
+                          learning_rate=best_params['learning_rate'], n_estimators=best_params['n_estimators'], subsample_for_bin=200
+                          )
+
+    return model
+
 # Plot each iteration's average 
 def plot_avg(optimizer, n_iter, X_test, y_test, model, model_name):
     # Extract avg_score from each optimization run
@@ -102,50 +106,64 @@ def plot_avg(optimizer, n_iter, X_test, y_test, model, model_name):
 ##############################################################################################################
 
 # Run Main Function
-def exec_nb_multi(X_train, X_test, y_train, y_test):
+def exec_lightgbm(X_train, X_test, y_train, y_test):
+
+    # # Call bounds for optimization 
+    # pbounds = get_hyperparameter_space()
     
-    # Call bounds for optimization 
-    pbounds = get_hyperparameter_space()
-    
-    # Select only the numeric columns for scaling
-    numeric_cols = X_train.select_dtypes(include=['float64', 'int64']).columns
-    
-    # Scale the numeric columns using MinMaxScaler
-    scaler = MinMaxScaler()
-    X_train[numeric_cols] = scaler.fit_transform(X_train[numeric_cols])
-    X_test[numeric_cols] = scaler.transform(X_test[numeric_cols])
-    
-    # Reassign the column names to the scaled data
-    X_train.columns = pd.Index(X_train.columns)
-    X_test.columns = pd.Index(X_test.columns)
-    
-    # Evaluate model
-    def evaluate_model(alpha):
+    # # Evaluate XGBoost model
+    # def evaluate_model(num_leaves, max_depth, learning_rate, n_estimators):
         
-        # Run model
-        model = MultinomialNB(alpha = alpha)
+    #     # Define the model with the given hyperparameters
+    #     model = lgb.LGBMClassifier(boosting_type='gbdt', num_leaves=int(num_leaves), max_depth=int(max_depth),
+    #                           learning_rate=learning_rate, n_estimators=int(n_estimators), subsample_for_bin=200
+    #                           )
+
+    #     # Train and evaluate the model using cross-validation
+    #     cv_scores = cross_val_score(model, X_train, y_train, cv=10, scoring = 'accuracy')
+    #     avg_score = cv_scores.mean()
         
-        # Train and evaluate the model using cross-validation
-        cv_scores = cross_val_score(model, X_train, y_train, cv = 10, scoring = 'accuracy')
-        avg_score = cv_scores.mean()
-        
-        # Return the average accuracy
-        return avg_score
+    #     # Return the average accuracy
+    #     return avg_score
     
-    # Bayesian optimization
-    best_params, optimizer, n_iter = bayesian_optimization(evaluate_model, pbounds, n_iter = 10)
+    # # Bayesian optimization
+    # best_params, optimizer, n_iter = bayesian_optimization(evaluate_model, pbounds, n_iter = 10)
     
-    # Store the optimized model
-    model = nb_model(best_params)
+    # # Store the optimized model
+    # model = lightgbm_model(best_params)
     
-    # Run the model 
-    model.fit(X_train, y_train)
+    print('0')
+    
+    try:
+        model = lgb.LGBMClassifier(num_leaves=2, max_depth=3,learning_rate=0.1, n_estimators=127, subsample_for_bin=200)
+    except Exception as e:
+        print(f"Error when defining model: {e}")
+                               
+    print('1')
+    
+    # Run the lgbm model 
+    try:
+        model.fit(X_train,y_train,eval_set=[(X_test,y_test),(X_train,y_train)],
+          verbose=20,eval_metric='logloss')
+    except Exception as e:
+        print(f"Error when fitting model: {e}")
+    
+    # model.fit(X_train, y_train)
+    
+    print('2')
     
     # Plot accuracy 
-    model_name = "Naïve Bayes - Multinomial"
-    accuracy = plot_avg(optimizer, n_iter, X_test, y_test, model, model_name)
+    model_name = "LightBoost"
+    # accuracy = plot_avg(optimizer, n_iter, X_test, y_test, model, model_name)
     
-    model_type = "kernel"
+    model_type = "tree"
+    
+    # Make predictions for test data
+    y_pred = model.predict(X_test)
+    predictions = [round(value) for value in y_pred]
+
+    # Evaluate predictions
+    accuracy = accuracy_score(y_test, predictions)
+    print('Accuracy of Test Values: %.2f%%' % (accuracy * 100.0))
     
     return model, accuracy, model_type, model_name
-

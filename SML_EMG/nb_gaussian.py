@@ -32,4 +32,6 @@ def exec_nb_gaus(X_train, X_test, y_train, y_test):
     
     model_type = "kernel"
     
-    return model, accuracy, model_type
+    model_name = "Naïve Bayes Gaussian"
+    
+    return model, accuracy, model_type, model_name

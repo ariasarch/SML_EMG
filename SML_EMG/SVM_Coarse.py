@@ -148,5 +148,5 @@ def exec_svm_coarse(X_train, X_test, y_train, y_test):
     
     model_type = "kernel"
     
-    return model, accuracy, model_type
+    return model, accuracy, model_type, model_name
 

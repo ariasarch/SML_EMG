@@ -11,11 +11,9 @@ Installation and Usage:
             git clone https://github.com/ariasarch/SML_EMG.git
             cd SML_EMG
         
-        2. (Optional) Create a virtual environment
+        2. Create a virtual environment
         
-            python -m venv venv_name
-            source venv_name/bin/activate  # For Linux and macOS
-            venv_name\Scripts\activate     # For Windows
+            conda create --name new_environment_name --file conda_requirements.txt 
         
         3. Install the package using the provided setup.py script:
         
@@ -23,7 +21,7 @@ Installation and Usage:
         
         4. Install additional required dependencies using the requirements.txt file:
         
-            pip install -r requirements.txt
+            pip install -r pip_requirements.txt
             
         5.  Update the filepaths in config.py as needed for your system.
         

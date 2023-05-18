@@ -146,4 +146,4 @@ def exec_xgboost(X_train, X_test, y_train, y_test):
     
     model_type = "tree"
     
-    return model, accuracy, model_type
+    return model, accuracy, model_type, model_name

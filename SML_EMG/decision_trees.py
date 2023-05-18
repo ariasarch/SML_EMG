@@ -135,5 +135,5 @@ def exec_decision_trees(X_train, X_test, y_train, y_test):
     
     model_type = "tree"
     
-    return model, accuracy, model_type
+    return model, accuracy, model_type, model_name
 

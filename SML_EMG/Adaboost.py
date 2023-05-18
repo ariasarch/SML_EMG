@@ -131,7 +131,7 @@ def exec_adaboost(X_train, X_test, y_train, y_test):
     model_name = "Adaboost"
     accuracy = plot_avg(optimizer, n_iter, X_test, y_test, model, model_name)
     
-    model_type = "tree"
+    model_type = "kernel"
     
-    return model, accuracy, model_type
+    return model, accuracy, model_type, model_name
 

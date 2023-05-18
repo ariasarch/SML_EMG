@@ -17,16 +17,22 @@ def shap_exp_tree(model, X_train, X_test):
 
     # Explain the model's predictions using SHAP values
     explainer = shap.TreeExplainer(model, X_train)
-    shap_values = explainer(X_test)
+    shap_values = explainer(X_test, check_additivity=False)
     
     # Calculate the average SHAP value for each feature, SHAP_i = (1/N) * Σ SHAP(x_j, i)
     SHAP = np.mean(np.abs(shap_values.values), axis=0)
+    
+    # For binary classification ensure only first column is kept 
+    if len(SHAP.shape) == 2:
+        SHAP = SHAP[:, 0]
     
     # Create a bar plot for sorted SHAP values
     fig, ax = plt.subplots(figsize=(8,6))
 
     # Get the indices of the sorted SHAP values in descending order
     idx = np.argsort(SHAP)
+
+    print(idx.shape)    
 
     # Plot the SHAP values in descending order
     ax.barh(X_train.columns[idx], SHAP[idx])
@@ -47,7 +53,7 @@ def shap_exp_kernel(model, X_train, X_test):
 
     # Explain the model's predictions using SHAP values
     explainer = shap.KernelExplainer(model.predict_proba, background)
-    shap_values = explainer.shap_values(X_test, nsamples=10)
+    shap_values = explainer.shap_values(X_test, nsamples=10, check_additivity=False)
 
     # Convert the list of arrays to a single array
     shap_values = np.vstack(shap_values)

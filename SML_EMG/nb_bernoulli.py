@@ -134,5 +134,5 @@ def exec_nb_bern(X_train, X_test, y_train, y_test):
     
     model_type = "kernel"
     
-    return model, accuracy, model_type
+    return model, accuracy, model_type, model_name
     

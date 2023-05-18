@@ -22,6 +22,7 @@ setup(
         'bayesian-optimization'
         'scikit-learn'
         'xgboost'
-        'logitboost'   
+        'logitboost'  
+        'LightGBM'
     ],
 )
