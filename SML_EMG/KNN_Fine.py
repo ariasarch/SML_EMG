@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun May  7 11:10:10 2023
+Created on Sun May  7 14:40:22 2023
 
 @author: ariasarch
 """
@@ -15,7 +15,7 @@ from bayes_opt import BayesianOptimization
 from bayes_opt.util import UtilityFunction
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import accuracy_score
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler
 
 ##############################################################################################################
 
@@ -36,7 +36,7 @@ def bayesian_optimization(evaluate_model, pbounds, n_iter):
     
     # Create optimizer
     optimizer = BayesianOptimization(f = evaluate_model, pbounds = pbounds, random_state = 42, verbose = 2, allow_duplicate_points=True)
-    
+   
     # Set GP parameters
     optimizer.set_gp_params(kernel = None, alpha = 1e-6)
     
@@ -70,10 +70,9 @@ def bayesian_optimization(evaluate_model, pbounds, n_iter):
     
     return best_params, optimizer, n_iter
 
-
 # Run KNN model
 def knn_model(best_params):
-    model = KNeighborsClassifier(n_neighbors = int(best_params['n_neighbors']))
+    model = KNeighborsClassifier(n_neighbors = int(best_params['n_neighbors']),  metric = 'cosine', p = 1)
     
     return model
 
@@ -109,7 +108,7 @@ def exec_KNN_fine(X_train, X_test, y_train, y_test):
     numeric_cols = X_train.select_dtypes(include=['float64', 'int64']).columns
     
     # Scale the numeric columns using MinMaxScaler
-    scaler = StandardScaler()
+    scaler = MinMaxScaler()
     X_train[numeric_cols] = scaler.fit_transform(X_train[numeric_cols])
     X_test[numeric_cols] = scaler.transform(X_test[numeric_cols])
     
@@ -124,7 +123,7 @@ def exec_KNN_fine(X_train, X_test, y_train, y_test):
     def evaluate_model(n_neighbors):
         
         # Run KNN model
-        model = KNeighborsClassifier(n_neighbors = int(n_neighbors))
+        model = KNeighborsClassifier(n_neighbors = int(n_neighbors), metric = 'cosine', p = 1)
         
         # Train and evaluate the model using cross-validation
         cv_scores = cross_val_score(model, X_train, y_train, cv = 10, scoring = 'accuracy')

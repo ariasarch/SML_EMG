@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun May  7 14:40:22 2023
+Created on Sun May  7 14:35:41 2023
 
 @author: ariasarch
 """
@@ -36,7 +36,7 @@ def bayesian_optimization(evaluate_model, pbounds, n_iter):
     
     # Create optimizer
     optimizer = BayesianOptimization(f = evaluate_model, pbounds = pbounds, random_state = 42, verbose = 2, allow_duplicate_points=True)
-   
+    
     # Set GP parameters
     optimizer.set_gp_params(kernel = None, alpha = 1e-6)
     
@@ -72,7 +72,7 @@ def bayesian_optimization(evaluate_model, pbounds, n_iter):
 
 # Run KNN model
 def knn_model(best_params):
-    model = KNeighborsClassifier(n_neighbors = int(best_params['n_neighbors']),  metric = 'cosine')
+    model = KNeighborsClassifier(n_neighbors = int(best_params['n_neighbors']), metric = 'cosine', p = 2)
     
     return model
 
@@ -102,7 +102,7 @@ def plot_avg(optimizer, n_iter, X_test, y_test, model, model_name):
 ##############################################################################################################
 
 # Run Main Function
-def exec_KNN_cosine(X_train, X_test, y_train, y_test):
+def exec_KNN_quadratic(X_train, X_test, y_train, y_test):
 
     # Select only the numeric columns for scaling
     numeric_cols = X_train.select_dtypes(include=['float64', 'int64']).columns
@@ -123,7 +123,7 @@ def exec_KNN_cosine(X_train, X_test, y_train, y_test):
     def evaluate_model(n_neighbors):
         
         # Run KNN model
-        model = KNeighborsClassifier(n_neighbors = int(n_neighbors), metric = 'cosine')
+        model = KNeighborsClassifier(n_neighbors = int(n_neighbors), metric = 'cosine', p = 2)
         
         # Train and evaluate the model using cross-validation
         cv_scores = cross_val_score(model, X_train, y_train, cv = 10, scoring = 'accuracy')
@@ -142,7 +142,7 @@ def exec_KNN_cosine(X_train, X_test, y_train, y_test):
     model.fit(X_train, y_train)
     
     # Plot accuracy 
-    model_name = "KNN Cosine"
+    model_name = "KNN Quadratic"
     accuracy = plot_avg(optimizer, n_iter, X_test, y_test, model, model_name)
     
     model_type = "kernel"

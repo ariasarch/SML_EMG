@@ -72,7 +72,7 @@ def bayesian_optimization(evaluate_model, pbounds, n_iter):
 
 # Run KNN model
 def knn_model(best_params):
-    model = KNeighborsClassifier(n_neighbors = int(best_params['n_neighbors']), metric = 'minkowski', p = 3)
+    model = KNeighborsClassifier(n_neighbors = int(best_params['n_neighbors']), metric = 'cosine', p = 3)
     
     return model
 
@@ -123,7 +123,7 @@ def exec_KNN_cubic(X_train, X_test, y_train, y_test):
     def evaluate_model(n_neighbors):
         
         # Run KNN model
-        model = KNeighborsClassifier(n_neighbors = int(n_neighbors), metric = 'minkowski', p = 3)
+        model = KNeighborsClassifier(n_neighbors = int(n_neighbors), metric = 'cosine', p = 3)
         
         # Train and evaluate the model using cross-validation
         cv_scores = cross_val_score(model, X_train, y_train, cv = 10, scoring = 'accuracy')

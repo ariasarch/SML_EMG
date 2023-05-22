@@ -14,7 +14,6 @@ from bayes_opt import BayesianOptimization
 from bayes_opt.util import UtilityFunction
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import accuracy_score
-from SML_EMG.config import file_path
 
 ##############################################################################################################
 

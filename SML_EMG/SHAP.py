@@ -7,6 +7,7 @@ Created on Fri May  5 13:49:28 2023
 """
 import shap
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
 # SHAP values for Tree Models 
@@ -32,13 +33,20 @@ def shap_exp_tree(model, X_train, X_test):
     # Get the indices of the sorted SHAP values in descending order
     idx = np.argsort(SHAP)
 
-    print(idx.shape)    
-
     # Plot the SHAP values in descending order
     ax.barh(X_train.columns[idx], SHAP[idx])
     ax.set_xlabel('SHAP Value')
     ax.set_title('Feature Importance, Tree')
     plt.show()
+    
+    # Ensure SHAP is a 2D array
+    SHAP = SHAP.reshape(1, -1)
+    
+    # Convert SHAP values to DataFrame
+    shap_df = pd.DataFrame(SHAP, columns=X_train.columns, index=['SHAP'])
+    
+    # Save the DataFrame to disk as a CSV file
+    shap_df.to_csv('shap_values_tree_sml.csv')
     
     return SHAP
 
@@ -49,11 +57,11 @@ def shap_exp_kernel(model, X_train, X_test):
     shap.initjs()
 
     # Set the number of background samples to use for SHAP value calculation
-    background = shap.sample(X_train, 10)
+    background = shap.sample(X_train, 100)
 
     # Explain the model's predictions using SHAP values
     explainer = shap.KernelExplainer(model.predict_proba, background)
-    shap_values = explainer.shap_values(X_test, nsamples=10, check_additivity=False)
+    shap_values = explainer.shap_values(X_test, nsamples=100, check_additivity=False)
 
     # Convert the list of arrays to a single array
     shap_values = np.vstack(shap_values)
@@ -74,5 +82,14 @@ def shap_exp_kernel(model, X_train, X_test):
     ax.set_xlabel('SHAP Value')
     ax.set_title('Feature Importance, Kernel')
     plt.show()
+    
+    # Ensure SHAP is a 2D array
+    SHAP = SHAP.reshape(1, -1)
+    
+    # Convert SHAP values to DataFrame
+    shap_df = pd.DataFrame(SHAP, columns=X_train.columns, index=['SHAP'])
+    
+    # Save the DataFrame to disk as a CSV file
+    shap_df.to_csv('shap_values_kernel_sml.csv')
 
     return SHAP

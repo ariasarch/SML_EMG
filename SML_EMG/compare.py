@@ -6,35 +6,42 @@ Created on Thu May 18 12:43:35 2023
 @author: ariasarch
 """
 
-# Get the row with the highest accuracy
-best_row = df_models.loc[df_models['Accuracy'].idxmax()]
+def calculate_metrics(tp, fn, fp, tn):
+    # Calculate Type I Error (False Positive Rate)
+    type_1_error = fp / (fp + tn)
 
-# Extract the best model and its details
-best_model = best_row['Model']
-best_time = best_row['Time']
-best_iter = best_row['Iteration']
-best_model_type = best_row['Model_Type']
-best_accuracy = best_row['Accuracy']
+    # Calculate Type II Error (False Negative Rate)
+    type_2_error = fn / (fn + tp)
 
-print(f"Best model: {best_model}, \n with accuracy: {best_accuracy}, and time taken: {best_time:.2f} seconds and iteration: {best_iter}")
+    # Calculate Sensitivity (True Positive Rate)
+    sensitivity = tp / (tp + fn)
 
-# Calculate SHAP Values
-if model_type == "tree":
-    SHAP = se.shap_exp_tree(best_model, X_train, X_test)
-    
-    # uncomment for p values
-    
-    # se.p_value_tree(X_train, X_test, y_train, y_test, best_model, SHAP)
-else:
-    SHAP = se.shap_exp_kernel(best_model, X_train, X_test)
-    
-    # uncomment for p values
-    
-    # se.p_value_tree(X_train, X_test, y_train, y_test, best_model, SHAP)
-    
-# Save the SHAP values to disk
-shap_filename = 'shap_values_sml.sav'
-# pickle.dump(SHAP, open(shap_filename, 'wb'))  
-    
-# Load models if need be
-#loaded_models, loaded_dic, loaded_SHAP = load_models_and_data(funcs)
+    # Calculate Specificity (True Negative Rate)
+    specificity = tn / (tn + fp)
+
+    # Calculate Precision (Positive Predictive Value)
+    precision = tp / (tp + fp)
+
+    # Calculate False Omission Rate
+    false_omission_rate = fn / (fn + tn)
+
+    # Calculate Accuracy
+    accuracy = (tp + tn) / (tp + tn + fp + fn)
+
+    # Calculate False Discovery Rate
+    false_discovery_rate = fp / (fp + tp)
+
+    # Calculate Negative Predictive Value
+    negative_predictive_value = tn / (tn + fn)
+
+    return {
+        'Type I Error': type_1_error,
+        'Type II Error': type_2_error,
+        'Sensitivity': sensitivity,
+        'Specificity': specificity,
+        'Precision': precision,
+        'False Omission Rate': false_omission_rate,
+        'Accuracy': accuracy,
+        'False Discovery Rate': false_discovery_rate,
+        'Negative Predictive Value': negative_predictive_value,
+    }

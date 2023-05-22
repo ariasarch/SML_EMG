@@ -7,11 +7,12 @@ Created on Fri May  5 13:14:30 2023
 """
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from SML_EMG.config import file_path
+from SML_EMG.config import base_path
 
 # Load the CSV file into a Pandas DataFrame 
 def load_csv(file_path):
     df = pd.read_csv(file_path)
+    
     return df
 
 # Split the data into training and testing sets
@@ -19,7 +20,8 @@ def split_data(X, y):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     return X_train, X_test, y_train, y_test
 
-def load():
+def load(file_path):
+    
     # Call load_csv 
     df = load_csv(file_path)
     
