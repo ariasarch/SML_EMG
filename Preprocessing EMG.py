@@ -17,7 +17,8 @@ def txt_file(file_path):
     # Read the csv file into a dataframe
     df = pd.read_csv(file_path, delimiter='\t')
 
-    df = df.drop(['Channel 3'], axis=1)
+    if 'Channel 3' in df.columns:
+        df = df.drop(['Channel 3'], axis=1)
 
     # Add a new column 'time' where its value is equal to the number of rows 
     df['time'] = range(1, len(df) + 1)
@@ -41,10 +42,15 @@ def get_column_stats(df, col_name):
 
     return (col_min, col_max, col_mean)
 
-# Apply moving average smoothing to a column
-def smooth_column(df, column_name, window_size):
-    # Create a new column with the smoothed values
-    df[column_name] = df[column_name].rolling(window_size, center=True, min_periods=1).mean()
+# Apply rectangular smoothing
+def extend_pulses(df):
+    df['Stimulation'] = (
+        df['Stimulation']
+        .rolling(5, min_periods=1)
+        .sum()
+        .apply(lambda x: 1 if x > 0 else 0)
+    )
+    
     return df
 
 # Apply smoothing
@@ -61,7 +67,7 @@ input_base_path = '/Users/ariasarch/Desktop/'
 output_base_path = '/Users/ariasarch/Desktop/'
 
 # Loop over participants and arm side
-for participant in range(11, 16):
+for participant in range(16, 17):
     for side in ['Right', 'Left']:
         # Prepare the file paths for input and output
         input_file_path = f'{input_base_path}Participant_{participant}_SML_EMG_{side}.txt'
@@ -70,15 +76,15 @@ for participant in range(11, 16):
         if os.path.exists(input_file_path):  # check if file exists
             # Call txt file
             df = txt_file(input_file_path)
-            
-            # Apply moving average smoothing to the 'Stimulation' column
-            df = smooth_column(df, 'Stimulation', 500)
 
             # Get stats
             col_min, col_max, col_mean = get_column_stats(df, 'Stimulation')
 
             # Apply smoothing
             df['Stimulation'] = df['Stimulation'].apply(threshold, mean=df['Stimulation'].mean())
+
+            # Apply moving average smoothing to the 'Stimulation' column
+            df = extend_pulses(df)
 
             # Drop the time column
             df = df.drop('time', axis=1)

@@ -23,14 +23,10 @@ Follow these steps to set up and run the code:
 
 5. (Optional) Modify the test script
 
-    Modify the number of types of models to run in the test script (if necessary).
+    Modify the number of types of models to run in the test script for a single or many files.
 
-6. (Optional) Modify the eval script
+6. (Optional) Modify the Best_model_SHAP script
 
     Modify the best model to run in the test script (if necessary).
     Adjust the p-value calculation settings in the test script (if necessary).
-
-7. Run the test script
-
-    python test.py
         

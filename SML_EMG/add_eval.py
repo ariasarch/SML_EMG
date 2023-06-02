@@ -8,9 +8,19 @@ Created on Fri May 19 15:20:52 2023
 
 import pandas as pd
 
-def calculate_averages(dfs, base_path, filename, non_average_columns=['Model Name', 'Time']):
+def calculate_averages(dfs, base_path, filename, non_average_columns=['Model Name', 'Iteration', 'Time']):
     # Concatenate all DataFrames
     all_models_df = pd.concat(dfs)
+
+    # Exclude specific columns
+    columns_to_exclude = ['Type I Error', 'Type II Error', 'False Omission Rate', 'False Discovery Rate']
+    columns_to_fill = [col for col in all_models_df.columns if col not in non_average_columns + columns_to_exclude]
+
+    # Fill NaN with zero in other columns
+    all_models_df[columns_to_fill] = all_models_df[columns_to_fill].fillna(0)
+
+    # Fill NaN with 1 in excluded columns
+    all_models_df[columns_to_exclude] = all_models_df[columns_to_exclude].fillna(1)
 
     # Group by the model name, and calculate the mean for each group
     avg_df = all_models_df.groupby('Model Name').mean()
@@ -19,10 +29,10 @@ def calculate_averages(dfs, base_path, filename, non_average_columns=['Model Nam
     avg_df.reset_index(inplace=True)
 
     # Create inverse for specified columns
-    columns_to_inverse = ['Type I Error', 'Type II Error', 'False Omission Rate', 'False Discovery Rate']
-    for col in columns_to_inverse:
+    for col in columns_to_exclude:
         if col in avg_df.columns:
             avg_df[col] = 1 - avg_df[col]
+            avg_df = avg_df.rename(columns={col: f"{col} Inverted"})
 
     # Create a new 'Evaluation' column as the mean of all other columns (excluding the ones defined above)
     avg_df['Evaluation'] = avg_df.drop(columns=non_average_columns).mean(axis=1)
@@ -63,8 +73,10 @@ def save_results_to_csv(dfs, shap_values_df, base_path):
 def pick_best_model(avg_df):
     # Get the row with the highest evaluation
     best_row = avg_df.loc[avg_df['Evaluation'].idxmax()]
+    
+    best_eval = best_row['Evaluation'].round(2)
 
     # Extract the best model and its details
     best_model = best_row['Model Name']
 
-    return best_model
+    return best_model, best_eval
