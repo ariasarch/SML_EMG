@@ -17,7 +17,7 @@ setup(
     install_requires=[
         'pandas==1.5.3',
         'matplotlib==3.7.0',
-        'numpy==1.23.5',
+        'numpy==1.23.1',
         'shap==0.41.0',
         'bayesian-optimization==1.4.3',
         'xgboost==1.5.0',

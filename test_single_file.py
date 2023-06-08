@@ -14,26 +14,26 @@ from SML_EMG.config import base_path
 from sklearn.metrics import confusion_matrix
 
 # Run all SML models
-funcs = [se.exec_xgboost, se.exec_logitboost, se.exec_adaboost, 
-          # se.exec_lightgbm,
-          se.exec_decision_trees,
-          se.exec_lda, se.exec_qda,
-          se.exec_nb_gaus, se.exec_nb_bern, se.exec_nb_multi,
-          # se.exec_svm_linear,
-          se.exec_svm_fine, se.exec_svm_medium, se.exec_svm_coarse,
-          # se.exec_svm_quadratic, se.exec_svm_cubic, 
-          se.exec_KNN_fine, se.exec_KNN_medium, se.exec_KNN_coarse, se.exec_KNN_cubic, se.exec_KNN_weighted, se.exec_KNN_quadratic,
-          se.exec_random_forest, se.exec_extra_trees,
-          se.exec_FNN]
+# funcs = [se.exec_xgboost, se.exec_logitboost, se.exec_adaboost, 
+#           # se.exec_lightgbm,
+#           se.exec_decision_trees,
+#           se.exec_lda, se.exec_qda,
+#           se.exec_nb_gaus, se.exec_nb_bern, se.exec_nb_multi,
+#           # se.exec_svm_linear,
+#           se.exec_svm_fine, se.exec_svm_medium, se.exec_svm_coarse,
+#           # se.exec_svm_quadratic, se.exec_svm_cubic, 
+#           se.exec_KNN_fine, se.exec_KNN_medium, se.exec_KNN_coarse, se.exec_KNN_cubic, se.exec_KNN_weighted, se.exec_KNN_quadratic,
+#           se.exec_random_forest, se.exec_extra_trees,
+#           se.exec_FNN]
 
 # Run a single SML model
-# funcs = [se.exec_nb_multi]
+funcs = [se.exec_decision_trees]
 
 # List to store DataFrames for each model
 model_search_df = []
         
 # Prepare the file path
-participant = '6'
+participant = '1'
 side = 'Left'
 file_path = f'{base_path}Participant_{participant}_SML_EMG_{side}_Processed.csv'
 

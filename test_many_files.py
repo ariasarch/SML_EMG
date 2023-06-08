@@ -31,64 +31,64 @@ funcs = [se.exec_xgboost, se.exec_logitboost, se.exec_adaboost,
 # funcs = [se.exec_xgboost]
 
 # Loop over participants and arm side
-# for participant in range(7, 11):
-#     for side in ['Right', 'Left']:
+for participant in range(1, 11):
+    for side in ['Right', 'Left']:
         
-#         # Keep track of loop
-#         print(f"Processing Participant {participant}, Side: {side}")        
+        # Keep track of loop
+        print(f"Processing Participant {participant}, Side: {side}")        
 
-#         # Prepare the file path
-#         file_path = f'{base_path}Participant_{participant}_SML_EMG_{side}_Processed.csv'
+        # Prepare the file path
+        file_path = f'{base_path}Participant_{participant}_SML_EMG_{side}_Processed.csv'
         
-#         # Split and load the data
-#         X_train, X_test, y_train, y_test = se.load(file_path)
+        # Split and load the data
+        X_train, X_test, y_train, y_test = se.load(file_path)
             
-#         # Store iteration
-#         iteration = 0
+        # Store iteration
+        iteration = 0
         
-#         # Initialize an empty DataFrame to store results for this participant and side
-#         df_models = pd.DataFrame(columns=['Model Name', 'Model', 'Time', 'Iteration', 'Model_Type'])
+        # Initialize an empty DataFrame to store results for this participant and side
+        df_models = pd.DataFrame(columns=['Model Name', 'Model', 'Time', 'Iteration', 'Model_Type'])
 
-#         # Loop all SML functions
-#         for func in funcs:
-#             print("Running:", func.__name__, "for iteration", iteration)
+        # Loop all SML functions
+        for func in funcs:
+            print("Running:", func.__name__, "for iteration", iteration)
             
-#             # Start time
-#             start_time = time.time()
+            # Start time
+            start_time = time.time()
             
-#             # Run model
-#             model, accuracy, model_type, model_name = func(X_train, X_test, y_train, y_test)
+            # Run model
+            model, accuracy, model_type, model_name = func(X_train, X_test, y_train, y_test)
             
-#             # End time
-#             end_time = time.time()
-#             elapsed_time = end_time - start_time
+            # End time
+            end_time = time.time()
+            elapsed_time = end_time - start_time
             
-#             # Get the predicted labels from the model
-#             y_pred = model.predict(X_test).flatten()
-#             y_pred = [round(value) for value in y_pred]
+            # Get the predicted labels from the model
+            y_pred = model.predict(X_test).flatten()
+            y_pred = [round(value) for value in y_pred]
             
-#             # Calculate confusion matrix
-#             tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
+            # Calculate confusion matrix
+            tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
             
-#             # Calculate the metrics
-#             metrics = se.calculate_metrics(tp, fn, fp, tn)
+            # Calculate the metrics
+            metrics = se.calculate_metrics(tp, fn, fp, tn)
             
-#             # Append to DataFrame 
-#             df_models = df_models.append({
-#                 'Model': model, 
-#                 'Model Name': model_name,
-#                 'Time': elapsed_time, 
-#                 'Iteration': iteration, 
-#                 'Model_Type': model_type, 
-#                 **metrics
-#             }, ignore_index=True)
+            # Append to DataFrame 
+            df_models = df_models.append({
+                'Model': model, 
+                'Model Name': model_name,
+                'Time': elapsed_time, 
+                'Iteration': iteration, 
+                'Model_Type': model_type, 
+                **metrics
+            }, ignore_index=True)
             
-#             # Add iteration
-#             iteration += 1
+            # Add iteration
+            iteration += 1
         
-#         # Save the DataFrame to disk as a CSV file
-#         csv_filename = f'{base_path}Participant_{participant}_{side}_models_sml.csv'
-#         df_models.to_csv(csv_filename)
+        # Save the DataFrame to disk as a CSV file
+        csv_filename = f'{base_path}Participant_{participant}_{side}_models_sml.csv'
+        df_models.to_csv(csv_filename)
 
 # After the end of the loops
 csv_files = glob.glob(f'{base_path}Participant_*_models_sml.csv')

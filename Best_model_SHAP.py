@@ -36,8 +36,8 @@ dfs = []
 shap_values_df = pd.DataFrame()
 
 # Loop over participants and arm side
-for participant in range(1, 16):
-    for side in ['Right', 'Left']:
+for participant in range(13, 14):
+    for side in ['Left', 'Right']:
         
         # Keep track of loop
         print(f"Processing Participant {participant}, Side: {side}")        
@@ -96,7 +96,7 @@ for participant in range(1, 16):
         # Compute and save SHAP values
         if model_type == "tree":
             
-            SHAP = se.shap_exp_tree(model, X_train, X_test)
+            SHAP = se.shap_exp_tree(model, X_train, X_test, participant, side)
             
             # uncomment for p values
                 
@@ -104,7 +104,7 @@ for participant in range(1, 16):
             
         elif model_type == "kernel":
             
-            SHAP = se.shap_exp_kernel(model, X_train, X_test)
+            SHAP = se.shap_exp_kernel(model, X_train, X_test, participant, side)
             
             # uncomment for p values
                 

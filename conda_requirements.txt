@@ -1,6 +1,5 @@
 scikit-learn=1.2.1
 python=3.10
-jupyter
 spyder
 tensorflow
 nbconvert
